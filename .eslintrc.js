@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin', 'unused-imports', 'simple-import-sort', 'prettier'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'unused-imports', 'simple-import-sort', 'prettier', 'import'],
   extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended', 'prettier'],
   root: true,
   env: {
@@ -35,6 +35,40 @@ module.exports = {
       'warn',
       {
         disallowTypeAnnotations: false, // Allow type annotations
+      },
+    ],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        ignoreRestSiblings: true, // Ignore unused variables when rest siblings are present
+      },
+    ],
+    '@typescript-eslint/no-non-null-assertion': 'warn', // Warn about non-null assertions
+    '@typescript-eslint/prefer-readonly': 'error', // Enforce readonly modifier for variables wherever possible
+    '@typescript-eslint/array-type': [
+      'error',
+      {
+        default: 'array-simple', // Use array shorthand
+      },
+    ],
+    '@typescript-eslint/consistent-type-definitions': [
+      'error',
+      'interface', // Enforce consistent use of interface over type
+    ],
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: [
+          '**/*.test.ts', // Allow dev dependencies in test files
+          '**/*.spec.ts',
+          'test/*.ts',
+        ],
+      },
+    ],
+    'no-console': [
+      'error',
+      {
+        allow: ['warn', 'error'], // Allow console.warn and console.error
       },
     ],
   },
