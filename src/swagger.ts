@@ -37,9 +37,5 @@ export const swaggerApp = async (app: NestApplication) => {
     },
   });
 
-  logger.log('==========================================================');
-
   logger.log(`Swagger Docs will serve on ${docPrefix}`, 'NestApplication');
-
-  logger.log('==========================================================');
 };
