@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["**/*.js", "**/*.ts", "**/.*.js", "commitlint.config.ts"],
+  "include": ["**/*.js", "**/*.ts", "**/.*.js"],
   "exclude": ["node_modules", "dist", "coverage", "logs", "data"]
 }
