@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import type { NestApplication } from '@nestjs/core';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
@@ -26,6 +27,15 @@ async function bootstrap() {
 
   // Use Helmet middleware to set security headers
   app.use(helmet());
+
+  // Global validation pipe for validating incoming request payloads
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // Automatically transforms payload to DTO instance
+      whitelist: true, // Strips non-whitelisted properties
+      forbidNonWhitelisted: true, // Throws an error if unknown properties are present
+    })
+  );
 
   // Start the application
   await app.listen(env.PORT || 3000);
