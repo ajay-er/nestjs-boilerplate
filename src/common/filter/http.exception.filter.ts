@@ -19,8 +19,7 @@ import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
 import { Catch, HttpException } from '@nestjs/common';
 import type { Response } from 'express';
 
-import type { ExceptionPayload } from '@/common/error';
-import type { AppResponse } from '@/common/types';
+import type { AppResponse, ExceptionPayload } from '@/common/types';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
