@@ -53,8 +53,9 @@ module.exports = {
       },
     ],
     '@typescript-eslint/consistent-type-definitions': [
+      // you can change or remove this rule if you are heavily relies on declaration merging or extend an existing type
       'error',
-      'interface', // Enforce consistent use of interface over type
+      'type', // Enforce consistent use of type over interface
     ],
     'import/no-extraneous-dependencies': [
       'error',

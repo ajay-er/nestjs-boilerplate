@@ -3,14 +3,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { LoggerService } from './logger/logger.service';
 
-interface ISwaggerConfig {
+type SwaggerConfig = {
   title: string;
   description?: string;
   version?: string;
   docPrefix?: string;
-}
+};
 
-export const swaggerApp = async (app: NestApplication, options: ISwaggerConfig) => {
+export const swaggerApp = async (app: NestApplication, options: SwaggerConfig) => {
   const logger = app.get<LoggerService>(LoggerService);
   const appName = options.title;
 
