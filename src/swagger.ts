@@ -1,19 +1,25 @@
-import { Logger } from '@nestjs/common';
 import type { NestApplication } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-import { env } from '@/common/config';
+import { LoggerService } from './logger/logger.service';
 
-export const swaggerApp = async (app: NestApplication) => {
-  const logger = new Logger();
-  const appName = env.APP_NAME;
+interface ISwaggerConfig {
+  title: string;
+  description?: string;
+  version?: string;
+  docPrefix?: string;
+}
 
-  const docPrefix = '/docs';
-  const docDescription = `Explore the API documentation for ${appName}, a robust Node.js boilerplate with NestJS. This framework offers scalability and maintainability for building production-ready applications. Features include authentication, CRUD operations, and more`;
-  const docVersion = '1.0';
+export const swaggerApp = async (app: NestApplication, options: ISwaggerConfig) => {
+  const logger = app.get<LoggerService>(LoggerService);
+  const appName = options.title;
+
+  const docPrefix = options.docPrefix ?? '/docs';
+  const docDescription = options.description ?? `Explore the API documentation for ${appName}.`;
+  const docVersion = options.version ?? '1.0';
 
   const config = new DocumentBuilder()
-    .setTitle(appName)
+    .setTitle(options.title)
     .setDescription(docDescription)
     .setVersion(docVersion)
     .addBearerAuth()
@@ -37,5 +43,5 @@ export const swaggerApp = async (app: NestApplication) => {
     },
   });
 
-  logger.log(`Swagger Docs will serve on ${docPrefix}`, 'NestApplication');
+  logger.info(`Swagger Docs will serve on ${docPrefix}`);
 };

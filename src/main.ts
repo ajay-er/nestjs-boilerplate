@@ -10,7 +10,7 @@ async function bootstrap() {
   const app: NestApplication = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(LoggerService));
 
-  await swaggerApp(app);
+  await swaggerApp(app, { title: env.APP_NAME });
   await app.listen(env.PORT || 3000);
 }
 bootstrap();
