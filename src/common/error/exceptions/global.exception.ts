@@ -37,6 +37,7 @@ enum GlobalExceptionCode {
   ServiceUnavailable = 'P5031',
   GatewayTimeout = 'P5041',
   PreconditionFailed = 'P4121',
+  TooManyRequests = 'P4291',
 }
 
 // Custom exception classes
@@ -154,4 +155,10 @@ export class PreconditionFailedError extends createException(
   412,
   'The server does not meet one of the preconditions that the requester put on the request.',
   GlobalExceptionCode.PreconditionFailed
+) {}
+
+export class TooManyRequestsError extends createException(
+  429,
+  'You have sent too many requests in a short period of time. Please wait a while before trying again.',
+  GlobalExceptionCode.TooManyRequests
 ) {}

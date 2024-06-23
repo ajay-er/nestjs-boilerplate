@@ -1,11 +1,28 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 
+import { env } from '@/common/config';
+import { AppThrottlerGuard } from '@/common/guards';
 import { LoggerModule } from '@/logger/logger.module';
 import { FeatureModules } from '@/modules/feature.module';
-
 @Module({
-  imports: [LoggerModule, FeatureModules],
+  imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: env.THROTTLE_TTL,
+        limit: env.THROTTLE_LIMIT,
+      },
+    ]),
+    LoggerModule,
+    FeatureModules,
+  ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AppThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

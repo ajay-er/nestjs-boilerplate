@@ -1,4 +1,4 @@
-import type { NestApplication } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { LoggerService } from './logger/logger.service';
@@ -10,7 +10,7 @@ type SwaggerConfig = {
   docPrefix?: string;
 };
 
-export const swaggerApp = async (app: NestApplication, options: SwaggerConfig) => {
+export const swaggerApp = async (app: NestExpressApplication, options: SwaggerConfig) => {
   const logger = app.get<LoggerService>(LoggerService);
   const appName = options.title;
 

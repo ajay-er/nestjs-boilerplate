@@ -1,6 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
-import type { NestApplication } from '@nestjs/core';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 
 import { AppModule } from '@/app.module';
@@ -11,10 +11,13 @@ import { swaggerApp } from '@/swagger';
 
 async function bootstrap() {
   // Create NestJS application instance
-  const app: NestApplication = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
 
   // Integrate Swagger UI and API documentation into the application
   await swaggerApp(app, { title: env.APP_NAME });
+
+  // Enable trust proxy for Express
+  app.set('trust proxy', true);
 
   // Enable CORS with configured origin and credentials
   app.enableCors({ origin: env.CORS_ORIGIN, credentials: true });
