@@ -34,4 +34,26 @@ export const env = cleanEnv(process.env, {
     default: 20,
     desc: 'The maximum number of API requests allowed within the THROTTLE_TTL window. If a client exceeds this limit, their requests will be throttled.',
   }),
+
+  POSTGRES_HOST: str({
+    default: 'localhost',
+    desc: 'PostgreSQL database host address',
+  }),
+
+  POSTGRES_PORT: port({
+    default: 5432,
+    desc: 'PostgreSQL database port number',
+  }),
+
+  POSTGRES_USER: str({
+    desc: 'PostgreSQL database username',
+  }),
+
+  POSTGRES_PASSWORD: str({
+    desc: 'PostgreSQL database password',
+  }),
+
+  POSTGRES_DB: str({
+    desc: 'PostgreSQL database name',
+  }),
 });
