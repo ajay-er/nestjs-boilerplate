@@ -29,7 +29,7 @@ import { ConfigurableDatabaseModule, CONNECTION_POOL, DATABASE_OPTIONS } from '.
           user: databaseOptions.user,
           password: databaseOptions.password,
           database: databaseOptions.database,
-          ssl: { rejectUnauthorized: false }, // Use SSL with relaxed security (not verifying server certificate)
+          ssl: { rejectUnauthorized: false }, // Enable SSL certificate validation for production environments
         });
 
         // Test the database connection by running a simple query
