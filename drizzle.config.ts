@@ -15,12 +15,19 @@ export default defineConfig({
   schema: './src/database/schema/*',
   out: './drizzle',
   dbCredentials: {
-    host: env.POSTGRES_HOST,
-    user: env.POSTGRES_USER,
-    password: env.POSTGRES_PASSWORD,
-    database: env.POSTGRES_DB,
-    port: env.POSTGRES_PORT,
-    ssl: { rejectUnauthorized: false }, // Enable SSL certificate validation for production environments
+    host: env.DATABASE_HOST,
+    user: env.DATABASE_USERNAME,
+    password: env.DATABASE_PASSWORD,
+    database: env.DATABASE_NAME,
+    port: env.DATABASE_PORT,
+    ssl: env.DATABASE_SSL_ENABLED
+      ? {
+          rejectUnauthorized: env.DATABASE_REJECT_UNAUTHORIZED || false,
+          ca: env.DATABASE_CA ?? undefined,
+          key: env.DATABASE_KEY ?? undefined,
+          cert: env.DATABASE_CERT ?? undefined,
+        }
+      : false,
   },
   verbose: true,
   strict: true,

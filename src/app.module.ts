@@ -12,11 +12,14 @@ import { DatabaseModule } from './database/database.module';
   imports: [
     DatabaseModule.forRootAsync({
       useFactory: () => ({
-        host: env.POSTGRES_HOST,
-        port: env.POSTGRES_PORT,
-        user: env.POSTGRES_USER,
-        password: env.POSTGRES_PASSWORD,
-        database: env.POSTGRES_DB,
+        host: env.DATABASE_HOST,
+        port: env.DATABASE_PORT,
+        user: env.DATABASE_USERNAME,
+        password: env.DATABASE_PASSWORD,
+        database: env.DATABASE_NAME,
+        maxConnections: env.DATABASE_MAX_CONNECTIONS,
+        sslEnabled: env.DATABASE_SSL_ENABLED,
+        rejectUnauthorized: env.DATABASE_REJECT_UNAUTHORIZED,
       }),
     }),
     ThrottlerModule.forRoot([

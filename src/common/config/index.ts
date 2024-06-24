@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { cleanEnv, host, num, port, str } from 'envalid';
+import { bool, cleanEnv, host, num, port, str } from 'envalid';
 
 export const env = cleanEnv(process.env, {
   APP_NAME: str({
@@ -35,25 +35,55 @@ export const env = cleanEnv(process.env, {
     desc: 'The maximum number of API requests allowed within the THROTTLE_TTL window. If a client exceeds this limit, their requests will be throttled.',
   }),
 
-  POSTGRES_HOST: str({
+  DATABASE_HOST: str({
     default: 'localhost',
-    desc: 'PostgreSQL database host address',
+    desc: 'The host address of the database server.',
   }),
 
-  POSTGRES_PORT: port({
+  DATABASE_PORT: port({
     default: 5432,
-    desc: 'PostgreSQL database port number',
+    desc: 'The port number on which the database server is listening.',
   }),
 
-  POSTGRES_USER: str({
-    desc: 'PostgreSQL database username',
+  DATABASE_USERNAME: str({
+    desc: 'The username used to authenticate with the database server.',
   }),
 
-  POSTGRES_PASSWORD: str({
-    desc: 'PostgreSQL database password',
+  DATABASE_PASSWORD: str({
+    desc: 'The password used to authenticate with the database server.',
   }),
 
-  POSTGRES_DB: str({
-    desc: 'PostgreSQL database name',
+  DATABASE_NAME: str({
+    desc: 'The name of the database to connect to.',
+  }),
+
+  DATABASE_MAX_CONNECTIONS: num({
+    default: 100,
+    desc: 'The maximum number of connections allowed in the database connection pool.',
+  }),
+
+  DATABASE_SSL_ENABLED: bool({
+    default: true,
+    desc: 'Whether SSL/TLS encryption is enabled for the database connection.',
+  }),
+
+  DATABASE_REJECT_UNAUTHORIZED: bool({
+    default: false,
+    desc: 'Whether to reject connections with SSL certificate validation issues.',
+  }),
+
+  DATABASE_CA: str({
+    desc: 'Optional CA certificate for database SSL/TLS connection (base64 encoded).',
+    default: '',
+  }),
+
+  DATABASE_KEY: str({
+    desc: 'Optional client key for database SSL/TLS connection (base64 encoded).',
+    default: '',
+  }),
+
+  DATABASE_CERT: str({
+    desc: 'Optional client certificate for database SSL/TLS connection (base64 encoded).',
+    default: '',
   }),
 });

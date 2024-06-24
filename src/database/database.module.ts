@@ -29,7 +29,15 @@ import { DatabaseService } from './database.service';
           user: databaseOptions.user,
           password: databaseOptions.password,
           database: databaseOptions.database,
-          ssl: { rejectUnauthorized: false }, // Enable SSL certificate validation for production environments
+          max: databaseOptions.maxConnections || 100,
+          ssl: databaseOptions.sslEnabled
+            ? {
+                rejectUnauthorized: databaseOptions.rejectUnauthorized || false,
+                ca: databaseOptions.ca ?? undefined,
+                key: databaseOptions.key ?? undefined,
+                cert: databaseOptions.cert ?? undefined,
+              }
+            : false,
         });
 
         // Test the database connection by running a simple query
