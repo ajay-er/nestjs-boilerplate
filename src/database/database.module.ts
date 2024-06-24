@@ -1,10 +1,10 @@
 import { Global, Logger, Module } from '@nestjs/common';
 import { Pool } from 'pg';
 
-import type { DatabaseOptions } from '@/database/utils';
+import type { DatabaseOptions } from '@/database/config';
 
+import { ConfigurableDatabaseModule, CONNECTION_POOL, DATABASE_OPTIONS } from './config';
 import { DatabaseService } from './database.service';
-import { ConfigurableDatabaseModule, CONNECTION_POOL, DATABASE_OPTIONS } from './utils';
 
 /**
  * Global DatabaseModule for setting up the PostgreSQL connection pool.
