@@ -1,10 +1,11 @@
-import { ValidationPipe } from '@nestjs/common';
+import { type ValidationError, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 
 import { AppModule } from '@/app.module';
 import { env } from '@/common/config';
+import { BadRequestError } from '@/common/error';
 import { AppResponseInterceptor } from '@/common/interceptors';
 import { LoggerService } from '@/logger/logger.service';
 import { swaggerApp } from '@/swagger';
@@ -37,6 +38,11 @@ async function bootstrap() {
       transform: true, // Automatically transforms payload to DTO instance
       whitelist: true, // Strips non-whitelisted properties
       forbidNonWhitelisted: true, // Throws an error if unknown properties are present
+      exceptionFactory: (validationErrors: ValidationError[] = []) => {
+        const firstError = validationErrors[0];
+        const firstConstraint = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Validation error';
+        return new BadRequestError(firstConstraint);
+      },
     })
   );
 
