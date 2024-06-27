@@ -86,4 +86,54 @@ export const env = cleanEnv(process.env, {
     desc: 'Optional client certificate for database SSL/TLS connection (base64 encoded).',
     default: '',
   }),
+
+  AUTH_JWT_SECRET: str({
+    desc: 'JWT secret key for authentication',
+    default: 'secret',
+  }),
+
+  AUTH_JWT_TOKEN_EXPIRES_IN: str({
+    desc: 'JWT token expiration time for authentication',
+    default: '15m',
+  }),
+
+  AUTH_REFRESH_SECRET: str({
+    desc: 'Refresh token secret key for authentication',
+    default: 'secret_for_refresh',
+  }),
+
+  AUTH_REFRESH_TOKEN_EXPIRES_IN: str({
+    desc: 'Refresh token expiration time for authentication',
+    default: '365d',
+  }),
+
+  AUTH_FORGOT_SECRET: str({
+    desc: 'Secret key for forgot password functionality',
+    default: 'secret_for_forgot',
+  }),
+
+  AUTH_FORGOT_TOKEN_EXPIRES_IN: str({
+    desc: 'Token expiration time for forgot password functionality',
+    default: '30m',
+  }),
+
+  AUTH_CONFIRM_EMAIL_SECRET: str({
+    desc: 'Secret key for email confirmation',
+    default: 'secret_for_confirm_email',
+  }),
+
+  AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN: str({
+    desc: 'Token expiration time for email confirmation',
+    default: '1d',
+  }),
+
+  GOOGLE_CLIENT_ID: str({
+    desc: 'Client ID for Google OAuth',
+    default: '',
+  }),
+
+  GOOGLE_CLIENT_SECRET: str({
+    desc: 'Client secret for Google OAuth',
+    default: '',
+  }),
 });

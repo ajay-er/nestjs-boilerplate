@@ -45,120 +45,204 @@ export class BadRequestError extends createException(
   400,
   'The request could not be understood by the server.',
   GlobalExceptionCode.BadRequest
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class UnauthorizedError extends createException(
   401,
   'You are not authorized to access this resource.',
   GlobalExceptionCode.Unauthorized
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class NotFoundError extends createException(
   404,
   'The requested resource could not be found.',
   GlobalExceptionCode.NotFound
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class ForbiddenError extends createException(
   403,
   'Access to this resource is forbidden.',
   GlobalExceptionCode.Forbidden
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class NotAcceptableError extends createException(
   406,
   'The server cannot generate a response that meets the criteria specified in the request.',
   GlobalExceptionCode.NotAcceptable
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class RequestTimeoutError extends createException(
   408,
   'The server timed out waiting for the request.',
   GlobalExceptionCode.RequestTimeout
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class ConflictError extends createException(
   409,
   'Conflict occurred while processing the request.',
   GlobalExceptionCode.Conflict
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class GoneError extends createException(
   410,
   'The requested resource is no longer available.',
   GlobalExceptionCode.Gone
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class HttpVersionNotSupportedError extends createException(
   505,
   'The HTTP version used in the request is not supported by the server.',
   GlobalExceptionCode.HttpVersionNotSupported
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class PayloadTooLargeError extends createException(
   413,
   'The request is larger than the server is willing or able to process.',
   GlobalExceptionCode.PayloadTooLarge
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class UnsupportedMediaTypeError extends createException(
   415,
   'The media type of the request entity is not supported by the server.',
   GlobalExceptionCode.UnsupportedMediaType
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class UnprocessableEntityError extends createException(
   422,
   'The server understands the content type of the request entity, but was unable to process the contained instructions.',
   GlobalExceptionCode.UnprocessableEntity
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class InternalServerError extends createException(
   500,
   'An unexpected error occurred while processing the request.',
   GlobalExceptionCode.InternalServerError
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class NotImplementedError extends createException(
   501,
   'The server does not support the functionality required to fulfill the request.',
   GlobalExceptionCode.NotImplemented
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
-export class ImATeapotError extends createException(418, "I'm a teapot (RFC 2324).", GlobalExceptionCode.ImATeapot) {}
+export class ImATeapotError extends createException(418, "I'm a teapot (RFC 2324).", GlobalExceptionCode.ImATeapot) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class MethodNotAllowedError extends createException(
   405,
   'The method specified in the request is not allowed for the resource identified by the request URI.',
   GlobalExceptionCode.MethodNotAllowed
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class BadGatewayError extends createException(
   502,
   'The server received an invalid response from an upstream server while processing the request.',
   GlobalExceptionCode.BadGateway
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class ServiceUnavailableError extends createException(
   503,
   'The server is currently unable to handle the request due to a temporary overload or maintenance of the server.',
   GlobalExceptionCode.ServiceUnavailable
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class GatewayTimeoutError extends createException(
   504,
   'The server did not receive a timely response from an upstream server it needed to access in order to complete the request.',
   GlobalExceptionCode.GatewayTimeout
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class PreconditionFailedError extends createException(
   412,
   'The server does not meet one of the preconditions that the requester put on the request.',
   GlobalExceptionCode.PreconditionFailed
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
 
 export class TooManyRequestsError extends createException(
   429,
   'You have sent too many requests in a short period of time. Please wait a while before trying again.',
   GlobalExceptionCode.TooManyRequests
-) {}
+) {
+  constructor(customMessage?: string) {
+    super(customMessage);
+  }
+}
