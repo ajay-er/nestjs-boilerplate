@@ -13,20 +13,18 @@ export class MailService {
   constructor(private readonly mailService: MailerService) {}
 
   async confirmNewEmail(mailData: MailData<{ token: string }>): Promise<void> {
-    const emailConfirmTitle: string = 'Confirm Email';
-
-    const url = new URL(env.FRONTEND_DOMAIN + '/confirm-new-email');
+    const url = new URL(env.FRONTEND_DOMAIN + '/auth/confirm');
     url.searchParams.set('token', mailData.data.token);
 
     await this.sendMail({
       to: mailData.to,
-      subject: emailConfirmTitle,
-      text: `${url.toString()} ${emailConfirmTitle}`,
-      templatePath: join(__dirname, 'templates', 'confirm-new-email.hbs'),
+      subject: `Welcome to ${env.APP_NAME}! Confirm your Email`,
+      text: `${url.toString()} Confirm your new email address.`,
+      templatePath: join(__dirname, 'templates', 'confirm-email.hbs'),
       context: {
-        title: emailConfirmTitle,
+        title: 'Confirm Your Email',
         url: url.toString(),
-        actionTitle: emailConfirmTitle,
+        actionTitle: 'Confirm Email',
         app_name: env.APP_NAME,
         text1: 'Hey!',
         text2: 'Confirm your new email address.',
