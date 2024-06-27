@@ -6,6 +6,7 @@ import { AuthProviders } from '@/common/types';
 import type { User } from '@/database/schema';
 
 import type { CreateUserDto } from './dto/create-user.dto';
+import type { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './repository/users.repository';
 
 @Injectable()
@@ -22,5 +23,13 @@ export class UsersService {
     user.password = await argon2.hash(user.password);
 
     return await this.usersRepository.create(user);
+  }
+
+  async findById(userId: number): Promise<User> {
+    return await this.usersRepository.findById(userId);
+  }
+
+  async update(userId: number, user: UpdateUserDto): Promise<User> {
+    return await this.usersRepository.update(userId, user);
   }
 }
