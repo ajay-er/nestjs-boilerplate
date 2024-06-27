@@ -29,6 +29,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.2.0",
@@ -43,6 +44,7 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.2",
     "envalid": "^8.0.0",
+    "handlebars": "^4.7.8",
     "helmet": "^7.1.0",
     "nestjs-pino": "^4.1.0",
     "passport": "^0.7.0",
