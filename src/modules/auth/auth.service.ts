@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as argon2 from 'argon2';
+import { plainToClass } from 'class-transformer';
 
 import { env } from '@/common/config';
-import { NotFoundError } from '@/common/error';
+import { BadRequestError, NotFoundError } from '@/common/error';
 import { AuthProviders, Role, Status } from '@/common/types';
-import type { User } from '@/database/schema';
+import type { JwtTokens } from '@/common/types/jwt.tokens';
 import { MailService } from '@/modules/mail/mail.service';
 import { UsersService } from '@/modules/users/users.service';
 
-import type { AuthRegisterDto } from './dto/auth-register.dto';
+import { AuthConfirmResponse, type AuthEmailLoginDto, type AuthRegisterDto, type LoginResponseDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +49,7 @@ export class AuthService {
     return { message: 'Registration successful. Please check your email for verification.' };
   }
 
-  async confirmEmail(token: string): Promise<User> {
+  async confirmEmail(token: string): Promise<AuthConfirmResponse> {
     const jwtData = await this.jwtService.verifyAsync<{
       confirmEmailUserId: number;
     }>(token, {
@@ -61,6 +63,48 @@ export class AuthService {
 
     const clonedUser = { ...user, status: Status.ACTIVE };
 
-    return await this.usersService.update(user.id, clonedUser);
+    const updatedUser = await this.usersService.update(user.id, clonedUser);
+
+    const userSerialized = plainToClass(AuthConfirmResponse, updatedUser);
+
+    return userSerialized;
+  }
+
+  async login(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
+    const user = await this.usersService.findByEmail(loginDto.email);
+    if (!user) throw new BadRequestError('Incorrect credentials. Please try again');
+
+    if (user.provider !== AuthProviders.email)
+      throw new BadRequestError('Login with email credentials is required for this account');
+
+    const isValidPassword = await argon2.verify(user.password, loginDto.password);
+
+    if (!isValidPassword) throw new BadRequestError('Incorrect credentials. Please try again');
+
+    const { accessToken, refreshToken } = await this.generateToken(user.id, user.role);
+
+    const userSerialized = plainToClass(AuthConfirmResponse, user);
+
+    return { refreshToken, accessToken, user: userSerialized };
+  }
+
+  async generateToken(userId: number, role: string): Promise<JwtTokens> {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          id: userId,
+          role,
+        },
+        { secret: env.AUTH_JWT_SECRET, expiresIn: env.AUTH_JWT_TOKEN_EXPIRES_IN }
+      ),
+      this.jwtService.signAsync(
+        {
+          id: userId,
+          role,
+        },
+        { secret: env.AUTH_REFRESH_SECRET, expiresIn: env.AUTH_REFRESH_TOKEN_EXPIRES_IN }
+      ),
+    ]);
+    return { accessToken, refreshToken };
   }
 }

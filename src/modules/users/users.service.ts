@@ -32,4 +32,8 @@ export class UsersService {
   async update(userId: number, user: UpdateUserDto): Promise<User> {
     return await this.usersRepository.update(userId, user);
   }
+
+  async findByEmail(email: string): Promise<User> {
+    return await this.usersRepository.findByEmail(email);
+  }
 }
