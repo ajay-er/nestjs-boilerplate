@@ -2,8 +2,6 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 
 import { ToLowerCase } from '@/common/transformers';
 
-import type { AuthConfirmResponse } from './auth-confirm.dto';
-
 export class AuthEmailLoginDto {
   @ToLowerCase()
   @IsEmail()
@@ -12,12 +10,4 @@ export class AuthEmailLoginDto {
 
   @IsNotEmpty()
   password: string;
-}
-
-export class LoginResponseDto {
-  accessToken: string;
-
-  refreshToken: string;
-
-  user: AuthConfirmResponse;
 }
