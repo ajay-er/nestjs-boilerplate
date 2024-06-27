@@ -10,7 +10,8 @@ import type { JwtTokens } from '@/common/types/jwt.tokens';
 import { MailService } from '@/modules/mail/mail.service';
 import { UsersService } from '@/modules/users/users.service';
 
-import { AuthConfirmResponse, type AuthEmailLoginDto, type AuthRegisterDto, type LoginResponseDto } from './dto';
+import type { AuthSuccessResponseDto } from './dto';
+import { type AuthEmailLoginDto, type AuthRegisterDto, UserResponse } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -49,7 +50,7 @@ export class AuthService {
     return { message: 'Registration successful. Please check your email for verification.' };
   }
 
-  async confirmEmail(token: string): Promise<AuthConfirmResponse> {
+  async confirmEmail(token: string): Promise<AuthSuccessResponseDto> {
     const jwtData = await this.jwtService.verifyAsync<{
       confirmEmailUserId: number;
     }>(token, {
@@ -65,12 +66,14 @@ export class AuthService {
 
     const updatedUser = await this.usersService.update(user.id, clonedUser);
 
-    const userSerialized = plainToClass(AuthConfirmResponse, updatedUser);
+    const { accessToken, refreshToken } = await this.generateToken(user.id, user.role);
 
-    return userSerialized;
+    const userSerialized = plainToClass(UserResponse, updatedUser);
+
+    return { refreshToken, accessToken, user: userSerialized };
   }
 
-  async login(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
+  async login(loginDto: AuthEmailLoginDto): Promise<AuthSuccessResponseDto> {
     const user = await this.usersService.findByEmail(loginDto.email);
     if (!user) throw new BadRequestError('Incorrect credentials. Please try again');
 
@@ -83,7 +86,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.generateToken(user.id, user.role);
 
-    const userSerialized = plainToClass(AuthConfirmResponse, user);
+    const userSerialized = plainToClass(UserResponse, user);
 
     return { refreshToken, accessToken, user: userSerialized };
   }

@@ -3,7 +3,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@
 import { ExcludeFieldsInterceptor } from '@/common/interceptors';
 
 import { AuthService } from './auth.service';
-import type { AuthConfirmResponse, LoginResponseDto } from './dto';
+import type { AuthSuccessResponseDto } from './dto';
 import { AuthConfirmEmailDto, AuthEmailLoginDto, AuthRegisterDto } from './dto';
 
 @Controller('auth')
@@ -19,13 +19,13 @@ export class AuthController {
   @Post('email/confirm')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(ExcludeFieldsInterceptor)
-  async confirmEmail(@Body() confirmEmailDto: AuthConfirmEmailDto): Promise<AuthConfirmResponse> {
+  async confirmEmail(@Body() confirmEmailDto: AuthConfirmEmailDto): Promise<AuthSuccessResponseDto> {
     return await this.service.confirmEmail(confirmEmailDto.token);
   }
 
   @Post('email/login')
   @HttpCode(HttpStatus.OK)
-  public login(@Body() loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
+  public login(@Body() loginDto: AuthEmailLoginDto): Promise<AuthSuccessResponseDto> {
     return this.service.login(loginDto);
   }
 }
