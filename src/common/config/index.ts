@@ -8,6 +8,11 @@ export const env = cleanEnv(process.env, {
     desc: 'The name of the application',
   }),
 
+  FRONTEND_DOMAIN: str({
+    default: 'http://localhost:3001',
+    desc: 'The base URL of the frontend application',
+  }),
+
   NODE_ENV: str({
     choices: ['development', 'test', 'production', 'staging'],
     desc: 'The application environment',
@@ -135,5 +140,34 @@ export const env = cleanEnv(process.env, {
   GOOGLE_CLIENT_SECRET: str({
     desc: 'Client secret for Google OAuth',
     default: '',
+  }),
+
+  MAIL_HOST: host({
+    desc: 'The host address for the mail server',
+  }),
+
+  MAIL_PORT: port({
+    desc: 'The port number for the mail server',
+  }),
+
+  MAIL_SECURE: bool({
+    default: false,
+    desc: 'Whether to use a secure connection for the mail server',
+  }),
+
+  MAIL_USER: str({
+    desc: 'The user for the mail server authentication',
+  }),
+
+  MAIL_PASSWORD: str({
+    desc: 'The password for the mail server authentication',
+  }),
+
+  MAIL_DEFAULT_NAME: str({
+    desc: 'The default name for the email sender',
+  }),
+
+  MAIL_DEFAULT_EMAIL: str({
+    desc: 'The default email address for the email sender',
   }),
 });

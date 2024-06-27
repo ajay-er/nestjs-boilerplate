@@ -4,10 +4,11 @@ import { APP_FILTER } from '@nestjs/core';
 import { GenericExceptionFilter, HttpExceptionFilter, RootExceptionFilter } from '@/common/filter';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { HealthModule } from '@/modules/health/health.module';
+import { MailModule } from '@/modules/mail/mail.module';
 import { UsersModule } from '@/modules/users/users.module';
 
 @Module({
-  imports: [HealthModule, UsersModule, AuthModule],
+  imports: [HealthModule, UsersModule, AuthModule, MailModule],
   providers: [
     // Declare the "Catch anything" filter first
     {
