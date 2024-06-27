@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
+import { PassportModule } from '@nestjs/passport';
 
 import { GenericExceptionFilter, HttpExceptionFilter, RootExceptionFilter } from '@/common/filter';
 import { AuthModule } from '@/modules/auth/auth.module';
+import { JwtStrategy } from '@/modules/auth/strategy';
 import { HealthModule } from '@/modules/health/health.module';
 import { MailModule } from '@/modules/mail/mail.module';
 import { UsersModule } from '@/modules/users/users.module';
 
 @Module({
-  imports: [HealthModule, UsersModule, AuthModule, MailModule],
+  imports: [HealthModule, UsersModule, AuthModule, MailModule, PassportModule],
   providers: [
     // Declare the "Catch anything" filter first
     {
@@ -24,6 +26,7 @@ import { UsersModule } from '@/modules/users/users.module';
       provide: APP_FILTER,
       useClass: RootExceptionFilter,
     },
+    JwtStrategy,
   ],
 })
 export class FeatureModules {}
