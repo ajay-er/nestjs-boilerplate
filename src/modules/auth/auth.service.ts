@@ -38,8 +38,10 @@ export class AuthService {
       provider: AuthProviders.email,
     });
 
+    const expiresIn = env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
+
     const token = await this.generateEmailVerificationToken(user.id);
-    await this.tokenService.storeEmailToken(token, user.id);
+    await this.tokenService.storeToken(token, user.id, TokenType.EmailVerification, expiresIn);
     await this.sendVerificationEmail(user.email, token);
 
     return { message: 'Registration successful. Please check your email for verification.' };
@@ -49,8 +51,10 @@ export class AuthService {
     if (existingUser.status === Status.INACTIVE) {
       const token = await this.generateEmailVerificationToken(existingUser.id);
 
-      await this.tokenService.revokeToken(TokenType.EmailVerification, existingUser.id);
-      await this.tokenService.storeEmailToken(token, existingUser.id);
+      const expiresIn = env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
+
+      await this.tokenService.deleteToken(TokenType.EmailVerification, existingUser.id);
+      await this.tokenService.storeToken(token, existingUser.id, TokenType.EmailVerification, expiresIn);
 
       await this.sendVerificationEmail(existingUser.email, token);
       return { message: 'Email already registered but not verified. Verification email resent.' };
@@ -59,9 +63,9 @@ export class AuthService {
   }
 
   async confirmEmail(token: string): Promise<AuthSuccessResponseDto> {
-    const isTokenRevoked = await this.tokenService.isTokenRevoked(token);
+    const isTokenExist = await this.tokenService.findToken(token);
 
-    if (isTokenRevoked) throw new BadRequestError('Invalid token or token does not exist');
+    if (!isTokenExist) throw new BadRequestError('Invalid token or token does not exist');
 
     const jwtData = await this.jwtService.verifyAsync<{
       confirmEmailUserId: number;
@@ -81,13 +85,13 @@ export class AuthService {
     const updatedUser = await this.usersService.update(user.id, clonedUser);
 
     // revoke token
-    await this.tokenService.revokeToken(TokenType.EmailVerification, user.id);
+    await this.tokenService.deleteToken(TokenType.EmailVerification, user.id);
 
     const { accessToken, refreshToken } = await this.generateToken(user.id, user.role);
 
     const userSerialized = plainToClass(UserResponse, updatedUser);
 
-    return { refreshToken, accessToken, user: userSerialized };
+    return { accessToken, refreshToken, user: userSerialized };
   }
 
   async login(loginDto: AuthEmailLoginDto): Promise<AuthSuccessResponseDto> {
@@ -105,7 +109,7 @@ export class AuthService {
 
     const userSerialized = plainToClass(UserResponse, user);
 
-    return { refreshToken, accessToken, user: userSerialized };
+    return { accessToken, refreshToken, user: userSerialized };
   }
 
   async refreshToken(user: number) {

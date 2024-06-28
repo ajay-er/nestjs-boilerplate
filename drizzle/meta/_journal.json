@@ -57,6 +57,13 @@
       "when": 1719564945817,
       "tag": "0007_regular_morbius",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1719589341532,
+      "tag": "0008_yellow_khan",
+      "breakpoints": true
     }
   ]
 }

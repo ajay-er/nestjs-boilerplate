@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { and, eq, lt } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
-import { TokenType } from '@/common/types';
+import type { TokenType } from '@/common/types';
 import { DatabaseService } from '@/database/database.service';
 import { tokens } from '@/database/schema';
 
@@ -9,22 +9,13 @@ import { tokens } from '@/database/schema';
 export class TokensRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  async create(token: string, userId: number, expiresAt: Date) {
+  async create(token: string, userId: number, tokenType: TokenType, expiresAt: Date) {
     return await this.database.db.insert(tokens).values({
       token,
       userId,
-      type: TokenType.EmailVerification,
+      type: tokenType,
       expiresAt,
     });
-  }
-
-  async update(tokenType: TokenType, userId: number) {
-    return await this.database.db
-      .update(tokens)
-      .set({
-        revoked: true,
-      })
-      .where(and(eq(tokens.userId, userId), eq(tokens.revoked, false), eq(tokens.type, tokenType)));
   }
 
   async find(token: string) {
@@ -32,7 +23,7 @@ export class TokensRepository {
     return result[0];
   }
 
-  async delete() {
-    return await this.database.db.delete(tokens).where(lt(tokens.expiresAt, new Date()));
+  async deleteOne(tokenType: TokenType, userId: number) {
+    return await this.database.db.delete(tokens).where(and(eq(tokens.type, tokenType), eq(tokens.userId, userId)));
   }
 }
