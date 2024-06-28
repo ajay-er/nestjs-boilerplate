@@ -1,4 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 
 import { ExcludeFieldsInterceptor } from '@/common/interceptors';
 
@@ -10,6 +11,7 @@ import { AuthConfirmEmailDto, AuthEmailLoginDto, AuthRegisterDto } from './dto';
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
+  @Throttle({ default: { limit: 3, ttl: 300000 } }) // 3 req in 5 mint
   @Post('email/register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: AuthRegisterDto): Promise<{ message: string }> {
@@ -23,6 +25,7 @@ export class AuthController {
     return await this.service.confirmEmail(confirmEmailDto.token);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 120000 } }) // 10 req in 2 mint
   @Post('email/login')
   @HttpCode(HttpStatus.OK)
   public login(@Body() loginDto: AuthEmailLoginDto): Promise<AuthSuccessResponseDto> {

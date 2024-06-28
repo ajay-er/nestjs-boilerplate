@@ -7,6 +7,7 @@ import { env } from '@/common/config';
 import { BadRequestError, NotFoundError } from '@/common/error';
 import { AuthProviders, Role, Status } from '@/common/types';
 import type { JwtTokens } from '@/common/types/jwt.tokens';
+import type { User } from '@/database/schema';
 import { MailService } from '@/modules/mail/mail.service';
 import { UsersService } from '@/modules/users/users.service';
 
@@ -22,6 +23,12 @@ export class AuthService {
   ) {}
 
   async register(registerDto: AuthRegisterDto): Promise<{ message: string }> {
+    const existingUser = await this.usersService.findByEmail(registerDto.email);
+
+    if (existingUser) {
+      return this.handleExistingUser(existingUser);
+    }
+
     const user = await this.usersService.create({
       ...registerDto,
       role: Role.USER,
@@ -29,25 +36,19 @@ export class AuthService {
       provider: AuthProviders.email,
     });
 
-    const token = await this.jwtService.signAsync(
-      {
-        confirmEmailUserId: user.id,
-      },
-      {
-        secret: env.AUTH_CONFIRM_EMAIL_SECRET,
-        expiresIn: env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN,
-      }
-    );
-
-    // TODO: BLOCKING --> NON BLOCKING:- USING QUEUE
-    await this.mailService.confirmNewEmail({
-      to: user.email,
-      data: {
-        token: token,
-      },
-    });
+    const token = await this.generateEmailVerificationToken(user.id);
+    await this.sendVerificationEmail(user.email, token);
 
     return { message: 'Registration successful. Please check your email for verification.' };
+  }
+
+  private async handleExistingUser(existingUser: User): Promise<{ message: string }> {
+    if (existingUser.status === Status.INACTIVE) {
+      const token = await this.generateEmailVerificationToken(existingUser.id);
+      await this.sendVerificationEmail(existingUser.email, token);
+      return { message: 'Email already registered but not verified. Verification email resent.' };
+    }
+    throw new BadRequestError('Email is already in use.');
   }
 
   async confirmEmail(token: string): Promise<AuthSuccessResponseDto> {
@@ -89,6 +90,23 @@ export class AuthService {
     const userSerialized = plainToClass(UserResponse, user);
 
     return { refreshToken, accessToken, user: userSerialized };
+  }
+
+  private async generateEmailVerificationToken(userId: number): Promise<string> {
+    return this.jwtService.signAsync(
+      { confirmEmailUserId: userId },
+      {
+        secret: env.AUTH_CONFIRM_EMAIL_SECRET,
+        expiresIn: env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN,
+      }
+    );
+  }
+
+  private async sendVerificationEmail(email: string, token: string): Promise<void> {
+    await this.mailService.confirmNewEmail({
+      to: email,
+      data: { token },
+    });
   }
 
   async generateToken(userId: number, role: string): Promise<JwtTokens> {
