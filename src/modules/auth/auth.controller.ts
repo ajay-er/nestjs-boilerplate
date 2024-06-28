@@ -1,7 +1,10 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+import { Request } from 'express';
 
+import { JwtRefreshAuthGuard } from '@/common/guards';
 import { ExcludeFieldsInterceptor } from '@/common/interceptors';
+import type { User } from '@/database/schema';
 
 import { AuthService } from './auth.service';
 import type { AuthSuccessResponseDto } from './dto';
@@ -30,5 +33,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   public login(@Body() loginDto: AuthEmailLoginDto): Promise<AuthSuccessResponseDto> {
     return this.service.login(loginDto);
+  }
+
+  @UseGuards(JwtRefreshAuthGuard)
+  @Get('refresh')
+  @HttpCode(HttpStatus.OK)
+  public refreshTokens(@Req() req: Request) {
+    const user = req.user as User;
+    return this.service.refreshToken(user.id);
   }
 }
