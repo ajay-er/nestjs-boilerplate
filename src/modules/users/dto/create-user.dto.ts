@@ -26,10 +26,6 @@ export class CreateUserDto {
   provider: AuthProviders;
 
   @IsOptional()
-  @IsString()
-  socialId?: string;
-
-  @IsOptional()
   imageUrl?: string;
 
   @IsEnum(Role)

@@ -13,7 +13,6 @@ export class ExcludeFieldsInterceptor implements NestInterceptor {
         data.password = undefined;
         data.role = undefined;
         data.provider = undefined;
-        data.socialId = undefined;
         return data;
       })
     );

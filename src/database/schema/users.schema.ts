@@ -12,15 +12,13 @@ export const users = pgTable('users', {
   email: varchar('email', { length: 255 }).unique(),
   password: varchar('password'),
   provider: providerEnum('provider').notNull(),
-  socialId: varchar('socialId', { length: 255 }),
   role: roleEnum('role').default('user').notNull(),
   status: statusEnum('status').default('inactive').notNull(),
   imageUrl: varchar('imageUrl'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at')
-    .defaultNow()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' })
+    .$onUpdate(() => new Date())
+    .notNull(),
 });
 
 export type User = InferSelectModel<typeof users>;
