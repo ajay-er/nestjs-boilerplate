@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 dayjs().format();
 
-import { env } from '@/common/config';
-import { BadRequestError } from '@/common/error';
 import type { TokenType } from '@/common/types';
 
 import { TokensRepository } from './tokens.repository';
@@ -12,29 +10,22 @@ import { TokensRepository } from './tokens.repository';
 export class TokensService {
   constructor(private readonly tokenRepository: TokensRepository) {}
 
-  async storeEmailToken(token: string, userId: number) {
-    const expiresIn = env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
+  async storeToken(token: string, userId: number, tokenType: TokenType, expiresIn: string) {
     const { value, unit } = this.parseExpiresIn(expiresIn);
 
     const expiresAt = dayjs()
       .add(value, unit as dayjs.ManipulateType)
       .toDate();
 
-    return await this.tokenRepository.create(token, userId, expiresAt);
+    return await this.tokenRepository.create(token, userId, tokenType, expiresAt);
   }
 
-  async revokeToken(tokenType: TokenType, userId: number) {
-    return await this.tokenRepository.update(tokenType, userId);
+  async deleteToken(tokenType: TokenType, userId: number) {
+    return await this.tokenRepository.deleteOne(tokenType, userId);
   }
 
-  async isTokenRevoked(token: string) {
-    const result = await this.tokenRepository.find(token);
-    if (!result) throw new BadRequestError('Invalid token or token does not exist.');
-    return result.revoked;
-  }
-
-  async cleanupExpiredTokens(): Promise<void> {
-    await this.tokenRepository.delete();
+  async findToken(token: string) {
+    return await this.tokenRepository.find(token);
   }
 
   private parseExpiresIn(expiresIn: string) {
