@@ -4,4 +4,5 @@ export * from './jwt.payload';
 export * from './response.payload';
 export * from './role.enum';
 export * from './status.enum';
+export * from './tokens.enum';
 export * from './user.payload';
