@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 
 import { GenericExceptionFilter, HttpExceptionFilter, RootExceptionFilter } from '@/common/filter';
 import { AuthModule } from '@/modules/auth/auth.module';
-import { JwtStrategy } from '@/modules/auth/strategy';
+import { JwtRefreshStrategy, JwtStrategy } from '@/modules/auth/strategy';
 import { HealthModule } from '@/modules/health/health.module';
 import { MailModule } from '@/modules/mail/mail.module';
 import { TokensModule } from '@/modules/tokens/tokens.module';
@@ -28,6 +28,7 @@ import { UsersModule } from '@/modules/users/users.module';
       useClass: RootExceptionFilter,
     },
     JwtStrategy,
+    JwtRefreshStrategy,
   ],
 })
 export class FeatureModules {}

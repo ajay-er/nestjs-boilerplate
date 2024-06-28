@@ -1,6 +1,6 @@
 import type { Role } from './role.enum';
 
 export type UserPayload = {
-  id: string;
+  id: number;
   role: Role;
 };

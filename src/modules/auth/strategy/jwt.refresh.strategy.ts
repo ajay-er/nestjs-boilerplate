@@ -6,12 +6,13 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { env } from '@/common/config';
 import { UnauthorizedError } from '@/common/error';
 import type { JwtPayload } from '@/common/types';
+import { UsersService } from '@/modules/users/users.service';
 
 import { JWT_REFRESH } from './strategy.token';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, JWT_REFRESH) {
-  constructor() {
+  constructor(private readonly usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: env.AUTH_REFRESH_SECRET,
@@ -19,14 +20,13 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, JWT_REFRESH) 
     });
   }
 
-  async validate(req: Request, payload: JwtPayload) {
-    const authorizationHeader = req.headers.authorization;
+  async validate(_req: Request, payload: JwtPayload) {
+    const user = await this.usersService.findById(payload.id);
 
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+    if (!user) {
       throw new UnauthorizedError();
     }
 
-    const [, token] = authorizationHeader.split(' ');
-    return { refreshToken: token, ...payload };
+    return user;
   }
 }

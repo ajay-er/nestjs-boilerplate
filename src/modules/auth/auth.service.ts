@@ -108,6 +108,10 @@ export class AuthService {
     return { refreshToken, accessToken, user: userSerialized };
   }
 
+  async refreshToken(user: number) {
+    console.warn(user);
+  }
+
   private async generateEmailVerificationToken(userId: number): Promise<string> {
     return this.jwtService.signAsync(
       { confirmEmailUserId: userId },
