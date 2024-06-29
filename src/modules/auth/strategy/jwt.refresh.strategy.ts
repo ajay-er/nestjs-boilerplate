@@ -4,7 +4,6 @@ import type { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { env } from '@/common/config';
-import { UnauthorizedError } from '@/common/error';
 import type { JwtPayload } from '@/common/types';
 import { UsersService } from '@/modules/users/users.service';
 
@@ -31,13 +30,6 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, JWT_REFRESH) 
   }
 
   async validate(payload: JwtPayload) {
-    console.warn(payload);
-    const user = await this.usersService.findById(payload.id);
-
-    if (!user) {
-      throw new UnauthorizedError();
-    }
-
-    return user;
+    return payload;
   }
 }

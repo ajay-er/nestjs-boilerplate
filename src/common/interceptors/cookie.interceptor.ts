@@ -13,7 +13,12 @@ export class CookieInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap((data) => {
         if (data && data.refreshToken) {
-          response.cookie(TokenType.RefreshToken, data.refreshToken, { httpOnly: true });
+          response.cookie(TokenType.RefreshToken, data.refreshToken, {
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+            maxAge: 24 * 60 * 60 * 1000,
+          });
         }
       })
     );
