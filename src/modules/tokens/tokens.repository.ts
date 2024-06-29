@@ -23,7 +23,11 @@ export class TokensRepository {
     return result[0];
   }
 
-  async deleteOne(tokenType: TokenType, userId: number) {
+  async deleteOldToken(tokenType: TokenType, userId: number) {
     return await this.database.db.delete(tokens).where(and(eq(tokens.type, tokenType), eq(tokens.userId, userId)));
+  }
+
+  async delete(token: string) {
+    return await this.database.db.delete(tokens).where(eq(tokens.token, token));
   }
 }

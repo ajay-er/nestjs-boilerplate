@@ -2,7 +2,7 @@ import { Exclude } from 'class-transformer';
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length, MinLength } from 'class-validator';
 
 import { ToLowerCase } from '@/common/transformers';
-import { AuthProviders } from '@/common/types';
+import { AuthProviders, Role, Status } from '@/common/types';
 
 export class UserResponse {
   @IsNotEmpty()
@@ -33,4 +33,12 @@ export class UserResponse {
 
   @IsOptional()
   imageUrl?: string;
+
+  @Exclude()
+  @IsOptional()
+  status: Status;
+
+  @Exclude()
+  @IsOptional()
+  role: Role;
 }

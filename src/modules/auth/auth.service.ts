@@ -4,7 +4,7 @@ import * as argon2 from 'argon2';
 import { plainToClass } from 'class-transformer';
 
 import { env } from '@/common/config';
-import { BadRequestError, ConflictError, NotFoundError } from '@/common/error';
+import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '@/common/error';
 import { AuthProviders, Role, Status, TokenType } from '@/common/types';
 import type { JwtTokens } from '@/common/types/jwt.tokens';
 import type { User } from '@/database/schema';
@@ -53,7 +53,7 @@ export class AuthService {
 
       const expiresIn = env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
 
-      await this.tokenService.deleteToken(TokenType.EmailVerification, existingUser.id);
+      await this.tokenService.deleteOldToken(TokenType.EmailVerification, existingUser.id);
       await this.tokenService.storeToken(token, existingUser.id, TokenType.EmailVerification, expiresIn);
 
       await this.sendVerificationEmail(existingUser.email, token);
@@ -84,17 +84,21 @@ export class AuthService {
 
     const updatedUser = await this.usersService.update(user.id, clonedUser);
 
-    // revoke token
-    await this.tokenService.deleteToken(TokenType.EmailVerification, user.id);
+    await this.tokenService.deleteToken(token);
 
     const { accessToken, refreshToken } = await this.generateToken(user.id, user.role);
+
+    const expiresIn = env.AUTH_REFRESH_TOKEN_EXPIRES_IN;
+    await this.tokenService.storeToken(refreshToken, user.id, TokenType.RefreshToken, expiresIn);
 
     const userSerialized = plainToClass(UserResponse, updatedUser);
 
     return { accessToken, refreshToken, user: userSerialized };
   }
 
-  async login(loginDto: AuthEmailLoginDto): Promise<AuthSuccessResponseDto> {
+  async login(loginDto: AuthEmailLoginDto, cookieToken: string | null): Promise<AuthSuccessResponseDto> {
+    if (cookieToken) await this.tokenService.deleteToken(cookieToken);
+
     const user = await this.usersService.findByEmail(loginDto.email);
     if (!user) throw new BadRequestError('Incorrect credentials. Please try again');
 
@@ -107,13 +111,34 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.generateToken(user.id, user.role);
 
+    const expiresIn = env.AUTH_REFRESH_TOKEN_EXPIRES_IN;
+    await this.tokenService.storeToken(refreshToken, user.id, TokenType.RefreshToken, expiresIn);
+
     const userSerialized = plainToClass(UserResponse, user);
 
     return { accessToken, refreshToken, user: userSerialized };
   }
 
-  async refreshToken(user: number) {
-    console.warn(user);
+  async logout(rToken: string): Promise<void> {
+    if (!rToken) return;
+    await this.tokenService.deleteToken(rToken);
+  }
+
+  async refreshToken(rToken: string, user: Partial<User>) {
+    const isTokenExist = await this.tokenService.findToken(rToken);
+
+    if (!isTokenExist) {
+      throw new ForbiddenError();
+    }
+
+    await this.tokenService.deleteToken(rToken);
+
+    const { accessToken, refreshToken } = await this.generateToken(user.id, user.role);
+
+    const expiresIn = env.AUTH_REFRESH_TOKEN_EXPIRES_IN;
+    await this.tokenService.storeToken(refreshToken, user.id, TokenType.RefreshToken, expiresIn);
+
+    return { accessToken, refreshToken };
   }
 
   private async generateEmailVerificationToken(userId: number): Promise<string> {

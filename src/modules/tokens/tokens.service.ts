@@ -20,8 +20,12 @@ export class TokensService {
     return await this.tokenRepository.create(token, userId, tokenType, expiresAt);
   }
 
-  async deleteToken(tokenType: TokenType, userId: number) {
-    return await this.tokenRepository.deleteOne(tokenType, userId);
+  async deleteOldToken(tokenType: TokenType, userId: number) {
+    return await this.tokenRepository.deleteOldToken(tokenType, userId);
+  }
+
+  async deleteToken(token: string) {
+    return await this.tokenRepository.delete(token);
   }
 
   async findToken(token: string) {
