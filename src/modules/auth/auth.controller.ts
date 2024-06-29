@@ -3,7 +3,7 @@ import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 
 import { JwtRefreshAuthGuard } from '@/common/guards';
-import { ExcludeFieldsInterceptor } from '@/common/interceptors';
+import { CookieInterceptor } from '@/common/interceptors';
 import type { User } from '@/database/schema';
 
 import { AuthService } from './auth.service';
@@ -14,25 +14,26 @@ import { AuthConfirmEmailDto, AuthEmailLoginDto, AuthRegisterDto } from './dto';
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
-  @Throttle({ default: { limit: 3, ttl: 300000 } }) // 3 req in 5 mint
+  @Throttle({ default: { limit: 7, ttl: 300000 } }) // 3 req in 5 mint
   @Post('email/register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: AuthRegisterDto): Promise<{ message: string }> {
     return await this.service.register(registerDto);
   }
 
+  @UseInterceptors(CookieInterceptor)
   @Post('email/confirm')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ExcludeFieldsInterceptor)
   async confirmEmail(@Body() confirmEmailDto: AuthConfirmEmailDto): Promise<AuthSuccessResponseDto> {
     return await this.service.confirmEmail(confirmEmailDto.token);
   }
 
   @Throttle({ default: { limit: 10, ttl: 120000 } }) // 10 req in 2 mint
+  @UseInterceptors(CookieInterceptor)
   @Post('email/login')
   @HttpCode(HttpStatus.OK)
-  public login(@Body() loginDto: AuthEmailLoginDto): Promise<AuthSuccessResponseDto> {
-    return this.service.login(loginDto);
+  async login(@Body() loginDto: AuthEmailLoginDto): Promise<AuthSuccessResponseDto> {
+    return await this.service.login(loginDto);
   }
 
   @UseGuards(JwtRefreshAuthGuard)

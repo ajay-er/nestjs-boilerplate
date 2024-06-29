@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 
-import { JwtAccessAuthGuard } from '@/common/guards';
+import { JwtRefreshAuthGuard } from '@/common/guards';
 
 import { HealthService } from './health.service';
 
@@ -14,7 +14,7 @@ export class HealthController {
   }
 
   @Get('/protected')
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtRefreshAuthGuard)
   wow() {
     return 'protected!!!';
   }

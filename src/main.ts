@@ -1,6 +1,7 @@
 import { type ValidationError, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 import { AppModule } from '@/app.module';
@@ -28,6 +29,9 @@ async function bootstrap() {
 
   // Register a global interceptor for handling outgoing responses
   app.useGlobalInterceptors(new AppResponseInterceptor());
+
+  // Middleware to parse cookies from incoming requests
+  app.use(cookieParser());
 
   // Use Helmet middleware to set security headers
   app.use(helmet());

@@ -1,2 +1,2 @@
-export * from './exclude-fields.interceptor';
+export * from './cookie.interceptor';
 export * from './response.interceptor';
