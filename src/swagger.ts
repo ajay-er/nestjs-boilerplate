@@ -23,6 +23,7 @@ export const swaggerApp = async (app: NestExpressApplication, options: SwaggerCo
     .setDescription(docDescription)
     .setVersion(docVersion)
     .addBearerAuth()
+    .addCookieAuth('refresh_token')
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {

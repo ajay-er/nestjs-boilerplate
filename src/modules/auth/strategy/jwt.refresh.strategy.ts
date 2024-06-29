@@ -14,13 +14,24 @@ import { JWT_REFRESH } from './strategy.token';
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, JWT_REFRESH) {
   constructor(private readonly usersService: UsersService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        JwtRefreshStrategy.extractJwtCookies,
+        // ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
       secretOrKey: env.AUTH_REFRESH_SECRET,
-      passReqToCallback: true,
+      ignoreExpiration: false,
     });
   }
 
-  async validate(_req: Request, payload: JwtPayload) {
+  private static extractJwtCookies(req: Request): string | null {
+    if (req.cookies && req.cookies.refresh_token) {
+      return req.cookies.refresh_token;
+    }
+    return null;
+  }
+
+  async validate(payload: JwtPayload) {
+    console.warn(payload);
     const user = await this.usersService.findById(payload.id);
 
     if (!user) {
