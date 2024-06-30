@@ -14,7 +14,14 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async create(user: CreateUserDto): Promise<User> {
-    if (!user.provider) user.provider = AuthProviders.email;
+    if (!user.providers.length) {
+      user.providers = [
+        {
+          provider: AuthProviders.EMAIL,
+          providerId: null,
+        },
+      ];
+    }
 
     const isUserExist = await this.usersRepository.findByEmail(user.email);
 
@@ -22,6 +29,10 @@ export class UsersService {
 
     user.password = await argon2.hash(user.password);
 
+    return await this.usersRepository.create(user);
+  }
+
+  async createOauthUser(user: CreateUserDto): Promise<User> {
     return await this.usersRepository.create(user);
   }
 

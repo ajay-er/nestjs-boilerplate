@@ -13,6 +13,7 @@ import { TokensService } from '@/modules/tokens/tokens.service';
 import { UsersService } from '@/modules/users/users.service';
 
 import type { AuthSuccessResponseDto } from './dto';
+import type { OAuthValidateDto } from './dto';
 import { type AuthEmailLoginDto, type AuthRegisterDto, UserResponse } from './dto';
 
 @Injectable()
@@ -23,6 +24,36 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly tokenService: TokensService
   ) {}
+
+  async validateOAuthUser(oauthUser: OAuthValidateDto): Promise<User> {
+    let user = await this.usersService.findByEmail(oauthUser.email);
+
+    if (!user) {
+      user = await this.usersService.createOauthUser({
+        ...oauthUser,
+        status: Status.ACTIVE,
+        providers: [oauthUser.providers],
+      });
+    } else {
+      let allUserProviders = user.providers;
+
+      if (user.status === Status.INACTIVE) {
+        allUserProviders = allUserProviders.filter((p) => p.provider !== AuthProviders.EMAIL);
+      }
+
+      const existingProvider = allUserProviders.find((p) => p.providerId === oauthUser.providers.providerId);
+
+      if (!existingProvider) {
+        allUserProviders.push(oauthUser.providers);
+        user = await this.usersService.update(user.id, {
+          providers: allUserProviders,
+          imageUrl: oauthUser.imageUrl,
+          status: Status.ACTIVE,
+        });
+      }
+    }
+    return user;
+  }
 
   async register(registerDto: AuthRegisterDto): Promise<{ message: string }> {
     const existingUser = await this.usersService.findByEmail(registerDto.email);
@@ -35,7 +66,7 @@ export class AuthService {
       ...registerDto,
       role: Role.USER,
       status: Status.INACTIVE,
-      provider: AuthProviders.email,
+      providers: [{ provider: AuthProviders.EMAIL, providerId: null }],
     });
 
     const expiresIn = env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
@@ -59,6 +90,7 @@ export class AuthService {
       await this.sendVerificationEmail(existingUser.email, token);
       return { message: 'Email already registered but not verified. Verification email resent.' };
     }
+
     throw new ConflictError('Email is already in use.');
   }
 
@@ -102,13 +134,30 @@ export class AuthService {
     const user = await this.usersService.findByEmail(loginDto.email);
     if (!user) throw new BadRequestError('Incorrect credentials. Please try again');
 
-    if (user.provider !== AuthProviders.email)
-      throw new BadRequestError('Login with email credentials is required for this account');
+    if (user.status === Status.INACTIVE) throw new BadRequestError('email not verified! Please register again!');
+
+    const hasEmailProvider = user.providers.some((p) => p.provider === AuthProviders.EMAIL);
+    if (!hasEmailProvider && user.providers.length > 0) {
+      throw new BadRequestError(
+        'You have registered using another method. Please log in using the same method you used for registration.'
+      );
+    }
 
     const isValidPassword = await argon2.verify(user.password, loginDto.password);
 
     if (!isValidPassword) throw new BadRequestError('Incorrect credentials. Please try again');
 
+    const { accessToken, refreshToken } = await this.generateToken(user.id, user.role);
+
+    const expiresIn = env.AUTH_REFRESH_TOKEN_EXPIRES_IN;
+    await this.tokenService.storeToken(refreshToken, user.id, TokenType.RefreshToken, expiresIn);
+
+    const userSerialized = plainToClass(UserResponse, user);
+
+    return { accessToken, refreshToken, user: userSerialized };
+  }
+
+  async oAuthLogin(user: User): Promise<AuthSuccessResponseDto> {
     const { accessToken, refreshToken } = await this.generateToken(user.id, user.role);
 
     const expiresIn = env.AUTH_REFRESH_TOKEN_EXPIRES_IN;

@@ -1,7 +1,10 @@
-import { IsEmail, IsEnum, IsOptional, IsString, Length } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEmail, IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 
 import { ToLowerCase } from '@/common/transformers';
 import { Status } from '@/common/types';
+
+import { ProviderDto } from './provider.dto';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -25,4 +28,9 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(Status)
   status?: Status;
+
+  @ValidateNested({ each: true })
+  @Type(() => ProviderDto)
+  @IsOptional()
+  providers?: ProviderDto[];
 }

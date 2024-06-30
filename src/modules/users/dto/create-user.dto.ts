@@ -1,7 +1,10 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length, MinLength, ValidateNested } from 'class-validator';
 
 import { ToLowerCase } from '@/common/transformers';
-import { AuthProviders, Role, Status } from '@/common/types';
+import { Role, Status } from '@/common/types';
+
+import { ProviderDto } from './provider.dto';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -20,10 +23,13 @@ export class CreateUserDto {
   email: string;
 
   @MinLength(6)
-  password: string;
+  @IsOptional()
+  password?: string;
 
-  @IsEnum(AuthProviders)
-  provider: AuthProviders;
+  @ValidateNested({ each: true })
+  @Type(() => ProviderDto)
+  @IsOptional()
+  providers: ProviderDto[];
 
   @IsOptional()
   imageUrl?: string;

@@ -64,6 +64,20 @@
       "when": 1719589341532,
       "tag": "0008_yellow_khan",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1719740750349,
+      "tag": "0009_small_payback",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1719748850315,
+      "tag": "0010_same_jubilee",
+      "breakpoints": true
     }
   ]
 }
