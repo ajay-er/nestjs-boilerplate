@@ -13,7 +13,7 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 
-import { JwtRefreshAuthGuard } from '@/common/guards';
+import { GoogleOauthGuard, JwtRefreshAuthGuard } from '@/common/guards';
 import { CookieInterceptor } from '@/common/interceptors';
 import { TokenType } from '@/common/types';
 import type { User } from '@/database/schema';
@@ -79,5 +79,24 @@ export class AuthController {
     const rToken = req.cookies[TokenType.RefreshToken];
     await this.service.logout(rToken);
     res.clearCookie(TokenType.RefreshToken, { httpOnly: true, sameSite: 'none', secure: true });
+  }
+
+  // for initiate google auth
+  @Get('google')
+  @UseGuards(GoogleOauthGuard)
+  async googleLogin(): Promise<void> {}
+
+  @Get('google/callback')
+  @UseGuards(GoogleOauthGuard)
+  @UseInterceptors(CookieInterceptor)
+  async googleLoginCallback(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<AuthSuccessResponseDto> {
+    const user = req.user as User;
+    const rToken = req.cookies[TokenType.RefreshToken];
+    await this.service.logout(rToken);
+    res.clearCookie(TokenType.RefreshToken, { httpOnly: true, sameSite: 'none', secure: true });
+    return await this.service.oAuthLogin(user);
   }
 }

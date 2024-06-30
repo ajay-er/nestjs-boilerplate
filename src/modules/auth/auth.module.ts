@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 @Module({
   imports: [JwtModule.register({}), UsersModule, MailModule, TokensModule],
   providers: [AuthService],
+  exports: [AuthService],
   controllers: [AuthController],
 })
 export class AuthModule {}

@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { bool, cleanEnv, host, num, port, str } from 'envalid';
+import { bool, cleanEnv, host, num, port, str, url } from 'envalid';
 
 export const env = cleanEnv(process.env, {
   APP_NAME: str({
@@ -140,6 +140,10 @@ export const env = cleanEnv(process.env, {
   GOOGLE_CLIENT_SECRET: str({
     desc: 'Client secret for Google OAuth',
     default: '',
+  }),
+
+  GOOGLE_CALLBACK_URL: url({
+    desc: 'callback url for Google OAuth',
   }),
 
   MAIL_HOST: host({

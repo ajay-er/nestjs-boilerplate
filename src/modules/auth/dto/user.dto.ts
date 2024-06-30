@@ -1,8 +1,10 @@
 import { Exclude } from 'class-transformer';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Length, MinLength } from 'class-validator';
 
 import { ToLowerCase } from '@/common/transformers';
-import { AuthProviders, Role, Status } from '@/common/types';
+import { Role, Status } from '@/common/types';
+
+import type { ProviderDto } from './oauth-validate.dto';
 
 export class UserResponse {
   @IsNotEmpty()
@@ -28,8 +30,7 @@ export class UserResponse {
   password: string;
 
   @Exclude()
-  @IsEnum(AuthProviders)
-  provider: AuthProviders;
+  providers?: ProviderDto[];
 
   @IsOptional()
   imageUrl?: string;
