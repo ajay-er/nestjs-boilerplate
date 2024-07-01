@@ -41,8 +41,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let message = exceptionResponse;
 
     // If the response is an object with a 'message' property, extract it
-    if (typeof exceptionResponse === 'object' && 'message' in exceptionResponse) {
-      message = (exceptionResponse as any).message;
+    if (typeof exceptionResponse === 'object' && exceptionResponse !== null && 'message' in exceptionResponse) {
+      message = exceptionResponse.message as string;
     }
 
     // Extract HTTP status code from HttpException

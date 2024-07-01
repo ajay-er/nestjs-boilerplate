@@ -6,6 +6,6 @@ import type { ExceptionPayload } from './exception.payload';
  */
 export type AppResponse = {
   success: boolean;
-  data: any;
+  data: unknown;
   error: ExceptionPayload;
 };

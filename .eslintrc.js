@@ -17,7 +17,6 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off', // Disable prefix requirement for interfaces
     '@typescript-eslint/explicit-function-return-type': 'off', // Disable explicit return type requirement for functions
     '@typescript-eslint/explicit-module-boundary-types': 'off', // Disable explicit return types for public functions and methods
-    '@typescript-eslint/no-explicit-any': 'off', // Allow the use of 'any' type (use sparingly)
     'simple-import-sort/imports': 'error', // Enforce import sorting with `eslint-plugin-simple-import-sort`
     'simple-import-sort/exports': 'error', // Enforce export sorting with `eslint-plugin-simple-import-sort`
     'import/order': 'off', // Disable conflicting rule with `eslint-plugin-simple-import-sort`

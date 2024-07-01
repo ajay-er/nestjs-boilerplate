@@ -31,10 +31,10 @@ export class GenericExceptionFilter implements ExceptionFilter {
    * @param host - Arguments host containing request and response objects.
    * @returns HTTP response with an error payload.
    */
-  catch(exception: any, host: ArgumentsHost) {
+  catch(exception: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
     const response: Response = context.getResponse<Response>();
-    const errorMessage = exception.message || exception.name;
+    const errorMessage = this.getErrorMessage(exception);
     const responseStatusCode = 500;
 
     // Construct error payload
@@ -52,5 +52,16 @@ export class GenericExceptionFilter implements ExceptionFilter {
 
     // Send JSON response with error details
     return response.status(responseStatusCode).json(exceptionResponse);
+  }
+
+  private getErrorMessage(exception: unknown): string {
+    if (exception instanceof Error) {
+      return exception.message || exception.name;
+    } else if (typeof exception === 'object' && exception !== null) {
+      return String(
+        (exception as Record<string, unknown>).message || (exception as Record<string, unknown>).name || 'Unknown error'
+      );
+    }
+    return 'Unknown error';
   }
 }

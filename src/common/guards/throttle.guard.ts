@@ -2,6 +2,7 @@ import type { ExecutionContext } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import type { ThrottlerLimitDetail } from '@nestjs/throttler/dist/throttler.guard.interface';
+import type { Request } from 'express';
 
 import { TooManyRequestsError } from '@/common/error';
 
@@ -19,10 +20,10 @@ export class AppThrottlerGuard extends ThrottlerGuard {
    * @param req - The request object.
    * @returns The IP address of the client making the request.
    */
-  protected async getTracker(req: Record<string, any>): Promise<string> {
+  protected async getTracker(req: Request): Promise<string> {
     // Extract the X-Forwarded-For header value
     const xForwardedFor = req.headers['x-forwarded-for'];
-    if (xForwardedFor) {
+    if (xForwardedFor && typeof xForwardedFor === 'string') {
       // Split the header to handle multiple IP addresses and take the first one
       const clientIp = xForwardedFor.split(',')[0].trim();
       return clientIp;

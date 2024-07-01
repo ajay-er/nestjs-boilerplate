@@ -5,9 +5,14 @@ import { type Observable, tap } from 'rxjs';
 
 import { TokenType } from '@/common/types';
 
+type TokenResponse = {
+  refreshToken?: string;
+  [key: string]: unknown;
+};
+
 @Injectable()
 export class CookieInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<TokenResponse> {
     const response = context.switchToHttp().getResponse<Response>();
 
     return next.handle().pipe(

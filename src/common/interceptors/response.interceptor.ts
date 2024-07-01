@@ -5,7 +5,10 @@ import { map } from 'rxjs';
 import type { AppResponse } from '@/common/types';
 
 export class AppResponseInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler<unknown>
+  ): Observable<AppResponse> | Promise<Observable<AppResponse>> {
     return next.handle().pipe(
       map((payload = {}): AppResponse => {
         return {

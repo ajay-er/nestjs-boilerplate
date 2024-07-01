@@ -9,6 +9,16 @@ import { AuthProviders } from '@/common/types';
 import { AuthService } from '../auth.service';
 import { GOOGLE_OAUTH } from './strategy.token';
 
+type GoogleProfile = {
+  id: string;
+  name: {
+    givenName: string;
+    familyName: string;
+  };
+  emails: Array<{ value: string }>;
+  photos: Array<{ value: string }>;
+};
+
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, GOOGLE_OAUTH) {
   constructor(private readonly authService: AuthService) {
@@ -20,7 +30,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, GOOGLE_OAUTH) {
     });
   }
 
-  async validate(_accessToken: string, _refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
+  async validate(
+    _accessToken: string,
+    _refreshToken: string,
+    profile: GoogleProfile,
+    done: VerifyCallback
+  ): Promise<void> {
     const { id, name, emails, photos } = profile;
 
     const user = {
